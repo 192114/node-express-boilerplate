@@ -1,32 +1,31 @@
 import { Request, Response, NextFunction } from "express";
-import { loginService } from "../services/auth.service";
+import { loginService, registerService } from "../services/auth.service";
 import { successResponse } from "../utils/response";
+import { LoginBody, RegisterBody } from "../schemas/auth.schema";
+import { TypedRequest } from "../types/request";
 
-export const registerController = (
-  req: Request,
+export const registerController = async (
+  req: TypedRequest<{ body: RegisterBody }>,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    await registerService(req.body);
+    successResponse(res, null, "注册成功");
   } catch (error) {
     next(error);
   }
 };
 
-type LoginBodyType = {
-  email: string;
-  password: string;
-};
-
 export const loginController = async (
-  req: Request<{}, {}, LoginBodyType>,
+  req: TypedRequest<{ body: LoginBody }>,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const body = req.body;
     const loginInfo = await loginService(body);
-    successResponse(res, loginInfo);
+    successResponse(res, loginInfo, "登录成功");
   } catch (error) {
     next(error);
   }
