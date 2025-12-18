@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
-import { ApiResponse } from "../types/response";
-import { HttpError } from "../utils/httpError";
+import { HttpError } from "../utils/httpError.js";
+
+import type { Request, Response, NextFunction } from "express";
 
 export const errorMiddleware = (
-  err: any,
+  err: unknown,
   _req: Request,
   res: Response,
   _next: NextFunction
@@ -16,9 +16,11 @@ export const errorMiddleware = (
     });
   }
 
+  const message = err instanceof Error ? err.message : "Internal Server Error";
+
   return res.status(500).json({
     code: 500,
     data: null,
-    message: err.message || "Internal Server Error",
+    message,
   });
 };

@@ -1,4 +1,4 @@
-import { LoginBody, RegisterBody } from "../schemas/auth.schema";
+import type { LoginBody, RegisterBody } from "../schemas/auth.schema.ts";
 
 export const loginService = async (body: LoginBody) => {
   return {

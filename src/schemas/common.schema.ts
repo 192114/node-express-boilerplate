@@ -12,8 +12,8 @@ export const passwordSchema = z
   .max(32, "密码最多 32 位")
   .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, "密码必须包含字母和数字");
 
-export const emailSchema = z.string().email("邮箱格式不正确");
+export const emailSchema = z.email({message: "邮箱格式不正确"});
 
-export const uuidSchema = z.string().uuid("UUID 格式不正确");
+export const uuidSchema = z.uuid({message: "UUID 格式不正确"});
 
 export const emailCodeSchema = z.string().length(6, "邮箱验证码必须是 6 位");

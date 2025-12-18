@@ -1,9 +1,9 @@
-import { Request } from "express";
+import type { Request } from "express";
 
 export type TypedRequest<
   T extends {
-    params?: any;
-    body?: any;
-    query?: any;
+    params?: unknown;
+    body?: unknown;
+    query?: unknown;
   }
 > = Request<T["params"], {}, T["body"], T["query"]>;
