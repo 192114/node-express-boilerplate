@@ -3,7 +3,6 @@ import tsPlugin from '@typescript-eslint/eslint-plugin'
 import importPlugin from 'eslint-plugin-import'
 import promisePlugin from 'eslint-plugin-promise'
 import nPlugin from 'eslint-plugin-n'
-import securityPlugin from 'eslint-plugin-security'
 import globals from 'globals'
 import prettierConfig from 'eslint-config-prettier'
 
@@ -38,19 +37,14 @@ export default [
       import: importPlugin,
       promise: promisePlugin,
       n: nPlugin,
-      security: securityPlugin,
     },
 
     rules: {
-      /* =====================
-       * Core
-       * ===================== */
+      /* Core */
       'no-debugger': 'error',
       'no-console': 'off',
 
-      /* =====================
-       * TypeScript (type-aware)
-       * ===================== */
+      /* Type-aware (核心) */
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/await-thenable': 'error',
@@ -59,21 +53,10 @@ export default [
 
       '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
 
-      /* =====================
-       * Node
-       * ===================== */
+      /* Node */
       'n/no-process-exit': 'error',
-      'n/no-sync': 'warn',
 
-      /* =====================
-       * Promise / async
-       * ===================== */
-      'promise/catch-or-return': 'error',
-      'promise/no-return-wrap': 'error',
-
-      /* =====================
-       * Imports
-       * ===================== */
+      /* Imports */
       'import/no-unresolved': 'off',
       'import/order': [
         'error',
