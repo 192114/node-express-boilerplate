@@ -63,7 +63,24 @@ export const envSchema = z.object({
   API_PREFIX: z.string().default('/api'),
 
   // 数据库配置
-  DATABASE_URL: z.url().optional(),
+  DATABASE_URL: z
+    .url()
+    .optional()
+    .refine(
+      (url) => {
+        if (!url) return true
+        try {
+          const urlObj = new URL(url)
+          const validProtocols = ['postgresql:', 'postgres:']
+          return validProtocols.includes(urlObj.protocol)
+        } catch {
+          return false
+        }
+      },
+      {
+        message: 'DATABASE_URL 必须是有效的 PostgreSQL 连接字符串',
+      },
+    ),
 
   // JWT 配置
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters long'),

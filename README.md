@@ -27,3 +27,5 @@ import { HttpError } from '../utils/httpError.ts' // ❌ 错误
 4. **运行时正确性**：编译后的代码在 Node.js 中运行时，实际加载的是 `.js` 文件，因此导入路径必须匹配运行时的实际文件。
 
 **总结：** 虽然源文件是 `.ts`，但导入时必须写 `.js`，这是 TypeScript + ES 模块的标准做法。TypeScript 编译器会自动处理这种映射关系。
+
+### 现有表的情况下 https://www.prisma.io/docs/getting-started/prisma-orm/add-to-existing-project/postgresql#4-introspect-your-database

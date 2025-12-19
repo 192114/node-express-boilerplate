@@ -23,7 +23,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: ['./tsconfig.json', './tsconfig.prisma.json'],
         tsconfigRootDir: import.meta.dirname,
         sourceType: 'module',
       },
