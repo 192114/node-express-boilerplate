@@ -1,7 +1,7 @@
 import type { LoginBody, RegisterBody } from '@/schemas/auth.schema.ts'
 
 import { prisma } from '@/database/prisma.js'
-import { HttpError } from '@/utils/httpError.js'
+import { HttpError, ErrorCode } from '@/utils/httpError.js'
 
 export const loginService = async (body: LoginBody) => {
   const user = await prisma.users.findUnique({
@@ -10,7 +10,7 @@ export const loginService = async (body: LoginBody) => {
     },
   })
   if (!user) {
-    throw new HttpError(401, 401, '用户不存在')
+    throw new HttpError(ErrorCode.INVALID_CREDENTIALS, '用户名或密码错误')
   }
 
   return {
