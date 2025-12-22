@@ -1,5 +1,5 @@
 import helmet from 'helmet'
-import { rateLimit } from 'express-rate-limit'
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit'
 
 import { config } from '@/config/index.js'
 
@@ -89,9 +89,9 @@ export const apiLimiter = rateLimit({
   standardHeaders: true, // 返回 `RateLimit-*` 头
   legacyHeaders: false, // 禁用 `X-RateLimit-*` 头
   keyGenerator: (req) => {
-    const ip = req.ip ?? 'unknown'
+    const ipKey = ipKeyGenerator(req.ip ?? 'unknown')
     const username = req.body?.username ?? 'anonymous'
-    return `${ip}:${username}`
+    return `${ipKey}:${username}`
   },
 })
 
@@ -109,8 +109,8 @@ export const strictLimiter = rateLimit({
   legacyHeaders: false,
   skipSuccessfulRequests: true, // 成功请求不计入限制
   keyGenerator: (req) => {
-    const ip = req.ip ?? 'unknown'
+    const ipKey = ipKeyGenerator(req.ip ?? 'unknown')
     const username = req.body?.username ?? 'anonymous'
-    return `${ip}:${username}`
+    return `${ipKey}:${username}`
   },
 })
