@@ -21,4 +21,4 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY prisma ./prisma
 EXPOSE 8090
-CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/server.js"]
+CMD ["sh", "-c", "pnpm run prisma:migrate-deploy && node dist/server.js"]

@@ -1,12 +1,11 @@
-version: '3.9'
 services:
   app:
     build: .
     profiles: ['prod']
     env_file:
-      - .env.docker
+      - .env
     ports:
-      - '8090:8090'
+      - '${API_PORT}:8090'
     depends_on:
       db:
         condition: service_healthy
@@ -15,19 +14,22 @@ services:
   db:
     image: postgres:16-alpine
     profiles: ['prod', 'dev']
-    environment:
-      POSTGRES_USER: app
-      POSTGRES_PASSWORD: app
-      POSTGRES_DB: node_express_boilerplate
+    env_file:
+      - .env
     ports:
-      - '5432:5432'
+      - '${POSTGRES_PORT}:5432'
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_OWNER_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_OWNER_PASSWORD}
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U app -d node_express_boilerplate']
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
       interval: 5s
       timeout: 5s
       retries: 10
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
 
 volumes:
   postgres_data:
