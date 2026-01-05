@@ -59,28 +59,15 @@ const corsOriginSchema = z
 export const envSchema = z.object({
   // 服务配置
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  PORT: z.string().regex(/^\d+$/).transform(Number).default(8090),
+  API_PORT: z.string().regex(/^\d+$/).transform(Number).default(8090),
   API_PREFIX: z.string().default('/api'),
 
   // 数据库配置
-  DATABASE_URL: z
-    .url()
-    .optional()
-    .refine(
-      (url) => {
-        if (!url) return true
-        try {
-          const urlObj = new URL(url)
-          const validProtocols = ['postgresql:', 'postgres:']
-          return validProtocols.includes(urlObj.protocol)
-        } catch {
-          return false
-        }
-      },
-      {
-        message: 'DATABASE_URL 必须是有效的 PostgreSQL 连接字符串',
-      },
-    ),
+  POSTGRES_HOST: z.string(),
+  POSTGRES_PORT: z.string().regex(/^\d+$/).transform(Number).default(5432),
+  POSTGRES_DB: z.string(),
+  POSTGRES_APP_USER: z.string(),
+  POSTGRES_APP_PASSWORD: z.string(),
 
   // JWT 配置
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters long'),

@@ -10,7 +10,7 @@ export const config = {
   // 应用层配置
   app: {
     env: env.NODE_ENV,
-    port: env.PORT,
+    port: env.API_PORT,
     apiPrefix: env.API_PREFIX,
     isProduction: env.NODE_ENV === 'production',
     isDevelopment: env.NODE_ENV === 'development',
@@ -18,7 +18,7 @@ export const config = {
   },
   // 数据库配置
   database: {
-    url: env.DATABASE_URL,
+    url: `postgresql://${env.POSTGRES_APP_USER}:${env.POSTGRES_APP_PASSWORD}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`,
   },
   // JWT 配置
   jwt: {
