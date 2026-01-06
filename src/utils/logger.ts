@@ -7,9 +7,24 @@ import { config } from '@/config/index.js'
 
 // 创建日志文件流（按日期分割）
 const logDir = 'logs'
-const logFile = join(logDir, `${new Date().toISOString().split('T')[0]}.log`)
+
+// 获取东八区日期（用于日志文件名）
+const getCSTDate = () => {
+  const now = new Date()
+  const cstTime = new Date(now.getTime() + 8 * 60 * 60 * 1000)
+  return cstTime.toISOString().split('T')[0]
+}
+
+const logFile = join(logDir, `${getCSTDate()}.log`)
 // 确保日志目录存在（可以在启动时创建）
 const fileStream = createWriteStream(logFile, { flags: 'a' })
+
+// 自定义时间戳函数（东八区）
+const cstTimeFunction = () => {
+  const now = new Date()
+  const cstTime = new Date(now.getTime() + 8 * 60 * 60 * 1000)
+  return `,"time":"${cstTime.toISOString()}"`
+}
 
 // 根据环境配置日志级别和格式
 const logger = pino(
@@ -20,7 +35,7 @@ const logger = pino(
         return { level: label }
       },
     },
-    timestamp: pino.stdTimeFunctions.isoTime,
+    timestamp: cstTimeFunction,
   },
 
   pino.multistream([
@@ -37,7 +52,7 @@ const logger = pino(
             target: 'pino-pretty',
             options: {
               colorize: true,
-              translateTime: 'HH:MM:ss Z',
+              translateTime: 'SYS:standard',
               ignore: 'pid,hostname',
             },
           })
