@@ -1,5 +1,9 @@
 import { z } from 'zod'
 
+import type { SignOptions } from 'jsonwebtoken'
+
+type JwtExpiresIn = NonNullable<SignOptions['expiresIn']>
+
 // 验证单个 URL 是否有效
 function isValidOriginUrl(url: string): boolean {
   const trimmedUrl = url.trim()
@@ -71,9 +75,15 @@ export const envSchema = z.object({
 
   // JWT 配置
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters long'),
-  JWT_EXPIRES_IN: z.string().default('7d'),
+  JWT_EXPIRES_IN: z
+    .string()
+    .regex(/^\d+(ms|s|m|h|d|w|y)$/)
+    .default('7d') as z.ZodType<JwtExpiresIn>,
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters long'),
-  JWT_REFRESH_EXPIRES_IN: z.string().default('30d'),
+  JWT_REFRESH_EXPIRES_IN: z
+    .string()
+    .regex(/^\d+(ms|s|m|h|d|w|y)$/)
+    .default('30d') as z.ZodType<JwtExpiresIn>,
 
   // Redis 配置
   REDIS_URL: z.url().optional(),

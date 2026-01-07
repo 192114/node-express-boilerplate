@@ -6,20 +6,56 @@ import type { LoginBody, RegisterBody } from '@/schemas/auth.schema.ts'
 
 import { prisma } from '@/database/prisma.js'
 import { HttpError, ErrorCode } from '@/utils/httpError.js'
+import { generateAccessToken, generateRefreshToken } from '@/utils/jwt.js'
 
 export const loginService = async (body: LoginBody) => {
-  const user = await prisma.user.findUnique({
+  const { email, password } = body
+  const existingUser = await prisma.user.findUnique({
     where: {
-      email: body.email,
+      email,
     },
   })
-  if (!user) {
+  if (!existingUser) {
     throw new HttpError(ErrorCode.INVALID_CREDENTIALS, '用户名或密码错误')
   }
 
+  const userId = existingUser.id
+
+  const existingCredential = await prisma.userCredential.findFirst({
+    where: {
+      userId,
+      type: 'PASSWORD',
+    },
+  })
+
+  const passwordHash = existingCredential?.passwordHash
+
+  if (!existingCredential || !passwordHash) {
+    throw new HttpError(ErrorCode.INVALID_CREDENTIALS, '用户名或密码错误')
+  }
+
+  const isValidatePassword = await argon2.verify(passwordHash, password)
+
+  if (!isValidatePassword) {
+    throw new HttpError(ErrorCode.INVALID_CREDENTIALS, '用户名或密码错误')
+  }
+
+  // 认证通过 开始处理jwt
+  const jwtPayload = { email, userId }
+  const { accessToken } = generateAccessToken(jwtPayload)
+  const { refreshToken, expiresAt } = generateRefreshToken(jwtPayload)
+
+  await prisma.userSession.create({
+    data: {
+      userId,
+      refreshToken,
+      refreshExpiresAt: expiresAt,
+    },
+  })
+
   return {
-    token: '1111',
-    refreshToken: '222',
+    accessToken,
+    refreshToken,
   }
 }
 
