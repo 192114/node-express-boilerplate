@@ -95,11 +95,11 @@ model EmailVerification {
 
   type VerificationType
 
-  expiresAt DateTime @map("expires_at")
+  expiresAt DateTime @db.Timestamptz(3) @map("expires_at")
   used      Boolean  @default(false)
   attempts Int @default(0) @db.SmallInt
 
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
 
   @@index([email])
   @@map("email_verifications")

@@ -1,29 +1,24 @@
+// src/utils/logger.ts
 import { join } from 'node:path'
 import { createWriteStream } from 'node:fs'
 
 import pino from 'pino'
 
+import dayjs from '@/utils/dayjs.js' // 新增
 import { config } from '@/config/index.js'
 
-// 创建日志文件流（按日期分割）
 const logDir = 'logs'
 
-// 获取东八区日期（用于日志文件名）
-const getCSTDate = () => {
-  const now = new Date()
-  const cstTime = new Date(now.getTime() + 8 * 60 * 60 * 1000)
-  return cstTime.toISOString().split('T')[0]
-}
+// 用 dayjs（默认 Asia/Shanghai）生成日志文件日期
+const getDate = () => dayjs().format('YYYY-MM-DD')
 
-const logFile = join(logDir, `${getCSTDate()}.log`)
-// 确保日志目录存在（可以在启动时创建）
+const logFile = join(logDir, `${getDate()}.log`)
 const fileStream = createWriteStream(logFile, { flags: 'a' })
 
-// 自定义时间戳函数（东八区）
-const cstTimeFunction = () => {
-  const now = new Date()
-  const cstTime = new Date(now.getTime() + 8 * 60 * 60 * 1000)
-  return `,"time":"${cstTime.toISOString()}"`
+// 用 dayjs 生成 ISO 时间戳（含时区偏移）
+const timestampFunction = () => {
+  const ts = dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+  return `,"time":"${ts}"`
 }
 
 // 根据环境配置日志级别和格式
@@ -31,20 +26,15 @@ const logger = pino(
   {
     level: config.app.isProduction ? 'info' : 'debug',
     formatters: {
-      level: (label) => {
-        return { level: label }
-      },
+      level: (label) => ({ level: label }),
     },
-    timestamp: cstTimeFunction,
+    timestamp: timestampFunction,
   },
-
   pino.multistream([
-    // 文件流：始终使用 JSON 格式
     {
       level: config.app.isProduction ? 'info' : 'debug',
       stream: fileStream,
     },
-    // 控制台流：开发环境美化，生产环境 JSON
     {
       level: config.app.isProduction ? 'info' : 'debug',
       stream: config.app.isDevelopment
@@ -52,7 +42,7 @@ const logger = pino(
             target: 'pino-pretty',
             options: {
               colorize: true,
-              translateTime: 'SYS:standard',
+              translateTime: 'SYS:standard', // 可保持不变；timestamp 已用 dayjs
               ignore: 'pid,hostname',
             },
           })
