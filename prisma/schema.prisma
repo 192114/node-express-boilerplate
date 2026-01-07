@@ -36,8 +36,8 @@ model User {
 
   status    UserStatus @default(ACTIVE)
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @db.Timestamptz(3)  @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)  @map("updated_at")
 
   // relations
   credentials UserCredential[]
@@ -57,8 +57,8 @@ model UserCredential {
 
   passwordHash String? @map("password_hash")
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @db.Timestamptz(3)  @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)  @map("updated_at")
 
   @@unique([userId, type])
   @@map("user_credentials")
@@ -72,14 +72,14 @@ model UserSession {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   refreshToken     String   @map("refresh_token")
-  refreshExpiresAt DateTime @map("refresh_expires_at")
+  refreshExpiresAt DateTime @db.Timestamptz(3)  @map("refresh_expires_at") 
 
   userAgent String? @map("user_agent")
   ipAddress String? @map("ip_address") @db.Inet
 
   revoked Boolean @default(false)
 
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @db.Timestamptz(3)  @map("created_at") 
 
   @@index([userId])
   @@index([refreshToken])
