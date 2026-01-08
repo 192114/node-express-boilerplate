@@ -6,6 +6,7 @@ import { emailSchema } from './common.schema.js'
 export const sendEmailCodeSchema = z.object({
   query: z.object({
     email: emailSchema,
+    type: z.enum(['REGISTER', 'RESET_PASSWORD']),
   }),
 })
 

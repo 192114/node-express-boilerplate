@@ -3,7 +3,7 @@ import * as argon2 from 'argon2'
 import { verifyEmailCode } from './mail.service.js'
 
 import type { Request } from 'express'
-import type { LoginBody, RegisterBody } from '@/schemas/auth.schema.ts'
+import type { LoginBody, RegisterBody, ResetPasswordBody } from '@/schemas/auth.schema.ts'
 
 import { prisma } from '@/database/prisma.js'
 import { HttpError, ErrorCode } from '@/utils/httpError.js'
@@ -98,6 +98,15 @@ export const registerService = async (body: RegisterBody) => {
   })
 }
 
+// 删除refreshToken
+export const deleteRefreshToken = async (id: string) => {
+  await prisma.userSession.delete({
+    where: {
+      id,
+    },
+  })
+}
+
 // 刷新token
 export const refreshTokenService = async (refreshToken?: string) => {
   if (!refreshToken) {
@@ -118,14 +127,16 @@ export const refreshTokenService = async (refreshToken?: string) => {
     throw new HttpError(ErrorCode.INVALID_TOKEN, '无效的凭证')
   }
 
-  const { revoked, refreshExpiresAt } = existingSession
+  const { revoked, refreshExpiresAt, id } = existingSession
   const now = new Date()
 
   if (revoked) {
+    await deleteRefreshToken(id)
     throw new HttpError(ErrorCode.SESSION_REVOKED, '凭证已被吊销')
   }
 
   if (now.getTime() > new Date(refreshExpiresAt).getTime()) {
+    await deleteRefreshToken(id)
     throw new HttpError(ErrorCode.TOKEN_EXPIRED, '凭证已经过期')
   }
 
@@ -137,6 +148,7 @@ export const refreshTokenService = async (refreshToken?: string) => {
   })
 
   if (!existingUser) {
+    await deleteRefreshToken(id)
     throw new HttpError(ErrorCode.NOT_FOUND, '用户不存在')
   }
 
@@ -150,4 +162,33 @@ export const refreshTokenService = async (refreshToken?: string) => {
   return {
     accessToken,
   }
+}
+
+// 忘记密码
+export const resetPasswordService = async (body: ResetPasswordBody) => {
+  const { email, emailCode, password } = body
+
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  })
+
+  if (!existingUser) {
+    throw new HttpError(ErrorCode.VALIDATION_ERROR, '邮箱或验证码错误')
+  }
+
+  await verifyEmailCode(email, emailCode, 'RESET_PASSWORD')
+
+  const passwordHash = await argon2.hash(password)
+
+  await prisma.userCredential.updateMany({
+    where: {
+      userId: existingUser.id,
+      type: 'PASSWORD',
+    },
+    data: {
+      passwordHash,
+    },
+  })
 }

@@ -22,3 +22,14 @@ export const loginSchema = z.object({
 })
 
 export type LoginBody = z.infer<typeof loginSchema>['body']
+
+// 忘记密码
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    email: emailSchema,
+    emailCode: emailCodeSchema,
+    password: passwordSchema,
+  }),
+})
+
+export type ResetPasswordBody = z.infer<typeof resetPasswordSchema>['body']

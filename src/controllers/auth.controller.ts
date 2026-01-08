@@ -1,9 +1,14 @@
 import type { Response, NextFunction } from 'express'
-import type { LoginBody, RegisterBody } from '@/schemas/auth.schema.ts'
+import type { LoginBody, RegisterBody, ResetPasswordBody } from '@/schemas/auth.schema.ts'
 import type { TypedRequest } from '@/types/request.ts'
 
 import { successResponse } from '@/utils/response.js'
-import { loginService, refreshTokenService, registerService } from '@/services/auth.service.js'
+import {
+  loginService,
+  refreshTokenService,
+  registerService,
+  resetPasswordService,
+} from '@/services/auth.service.js'
 import config from '@/config/index.js'
 
 // 注册
@@ -54,6 +59,21 @@ export const refreshTokenController = async (
     const { accessToken } = await refreshTokenService(refreshToken)
 
     successResponse(res, { accessToken }, '刷新Token成功')
+  } catch (error) {
+    next(error)
+  }
+}
+
+// 忘记密码
+export const resetPasswordController = async (
+  req: TypedRequest<{ body: ResetPasswordBody }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await resetPasswordService(req.body)
+
+    successResponse(res, null, '重置成功')
   } catch (error) {
     next(error)
   }

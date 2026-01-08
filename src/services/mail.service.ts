@@ -112,7 +112,7 @@ function generateVerificationEmailHtml(code: string): string {
 
 // 然后在 sendEmailCodeService 中使用
 export const sendEmailCodeService = async (query: SendEmailCodeQuery) => {
-  const { email } = query
+  const { email, type } = query
 
   // 查询库里最新的验证码
   const now = new Date()
@@ -120,7 +120,7 @@ export const sendEmailCodeService = async (query: SendEmailCodeQuery) => {
     where: {
       email,
       used: false,
-      type: 'REGISTER',
+      type,
       expiresAt: {
         gt: now,
       },
@@ -159,7 +159,7 @@ export const sendEmailCodeService = async (query: SendEmailCodeQuery) => {
     data: {
       email,
       codeHash: verificationCodeHash,
-      type: 'REGISTER',
+      type,
       expiresAt,
       used: false,
       attempts: 0,
