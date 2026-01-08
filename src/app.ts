@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 import { requestMetaMiddleware } from './middlewares/requestMeta.middleware.js'
 
@@ -16,6 +17,8 @@ import { config } from '@/config/index.js'
 
 const app = express()
 
+// cookie解析中间件
+app.use(cookieParser())
 // request 添加meta信息中间件
 app.use(requestMetaMiddleware)
 // 安全中间件

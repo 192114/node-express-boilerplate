@@ -1,11 +1,11 @@
 import { randomBytes } from 'node:crypto'
 
-import jwt from 'jsonwebtoken'
+import jwt, { type JwtPayload } from 'jsonwebtoken'
 
 import dayjs from '@/utils/dayjs.js'
 import { config } from '@/config/index.js'
 
-export interface JwtPalyload {
+export interface UserJwtPayload {
   userId: string
   email: string
 }
@@ -42,7 +42,7 @@ const calcExpiresAt = (value: ExpiresInType): Date => {
 
 // 生成access_token
 export const generateAccessToken = (
-  payload: JwtPalyload,
+  payload: UserJwtPayload,
 ): {
   accessToken: string
   expiresAt: Date
@@ -58,9 +58,45 @@ export const generateAccessToken = (
 }
 
 // 验证access_token
-export const verifyAccessToken = (accessToken: string): JwtPalyload => {
-  return jwt.verify(accessToken, secret) as JwtPalyload
+export enum VerifyAccessTokenErrorCodeEnum {
+  'TokenExpiredError' = 1, // token 过期
+  'JsonWebTokenError' = 2, // token 无效
+  'NotBeforeError' = 3, // token 还没到时间没生效
 }
+
+type VerifyAccessTokenErrorValue =
+  (typeof VerifyAccessTokenErrorCodeEnum)[keyof typeof VerifyAccessTokenErrorCodeEnum] // 得到 1 | 2 | 3
+
+export interface VerifyAccessTokenResult {
+  code: 0 | VerifyAccessTokenErrorValue | 4
+  data?: UserJwtPayload
+}
+export const verifyAccessToken = async (accessToken: string): Promise<VerifyAccessTokenResult> =>
+  new Promise((resovle, reject) => {
+    jwt.verify(accessToken, secret, (err, decode) => {
+      if (err) {
+        return reject({
+          code: VerifyAccessTokenErrorCodeEnum[
+            err.name as keyof typeof VerifyAccessTokenErrorCodeEnum
+          ],
+        })
+      }
+
+      if (!decode || typeof decode === 'string') {
+        return reject({
+          code: 4,
+        })
+      }
+
+      return resovle({
+        code: 0,
+        data: {
+          email: decode.email,
+          userId: decode.userId,
+        },
+      })
+    })
+  })
 
 // 生成refresh_token
 export const generateRefreshToken = (): {

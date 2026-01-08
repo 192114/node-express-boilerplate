@@ -8,6 +8,9 @@ declare global {
         ipAddress: string
         userAgent: string
       }
+      user?: {
+        userId: string
+      }
     }
   }
 }

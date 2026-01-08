@@ -1,15 +1,12 @@
 import { Router } from 'express'
 
-import healthRoutes from './health.routes.js'
-import authRoutes from './auth.routes.js'
-import mailRoutes from './mail.routes.js'
-
+// 公开不需要鉴权
+import publicRoutes from './public.routes.js'
+// 需要鉴权的
+import protectedRoutes from './protected.routes.js'
 const router = Router()
 
-router.get('/health', healthRoutes)
-
-router.use('/auth', authRoutes)
-
-router.use('/mail', mailRoutes)
+router.use(publicRoutes)
+router.use(protectedRoutes)
 
 export default router

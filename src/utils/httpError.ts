@@ -11,6 +11,7 @@ export enum ErrorCode {
   INVALID_TOKEN = 2001,
   TOKEN_EXPIRED = 2002,
   INVALID_CREDENTIALS = 2003,
+  SESSION_REVOKED = 2004, // refresh token 已被吊销 踢出情况
 
   // 业务逻辑错误码 (3000-3999)
   // 可以在这里添加更多业务错误码
@@ -29,6 +30,7 @@ const HTTP_STATUS_MAP: Record<ErrorCode, number> = {
   [ErrorCode.INVALID_TOKEN]: 401,
   [ErrorCode.TOKEN_EXPIRED]: 401,
   [ErrorCode.INVALID_CREDENTIALS]: 401,
+  [ErrorCode.SESSION_REVOKED]: 401,
   [ErrorCode.TOO_MANY_REQUESTS]: 429,
   [ErrorCode.EMAIL_ALREADY_EXISTS]: 429,
 }

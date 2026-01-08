@@ -97,3 +97,57 @@ export const registerService = async (body: RegisterBody) => {
     })
   })
 }
+
+// 刷新token
+export const refreshTokenService = async (refreshToken?: string) => {
+  if (!refreshToken) {
+    throw new HttpError(ErrorCode.VALIDATION_ERROR, '无效的凭证')
+  }
+
+  const existingSession = await prisma.userSession.findFirst({
+    where: {
+      refreshToken,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  // refresh token 不存在
+  if (!existingSession) {
+    throw new HttpError(ErrorCode.INVALID_TOKEN, '无效的凭证')
+  }
+
+  const { revoked, refreshExpiresAt } = existingSession
+  const now = new Date()
+
+  if (revoked) {
+    throw new HttpError(ErrorCode.SESSION_REVOKED, '凭证已被吊销')
+  }
+
+  if (now.getTime() > new Date(refreshExpiresAt).getTime()) {
+    throw new HttpError(ErrorCode.TOKEN_EXPIRED, '凭证已经过期')
+  }
+
+  const { userId } = existingSession
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  })
+
+  if (!existingUser) {
+    throw new HttpError(ErrorCode.NOT_FOUND, '用户不存在')
+  }
+
+  const { email } = existingUser
+
+  const { accessToken } = generateAccessToken({
+    email,
+    userId,
+  })
+
+  return {
+    accessToken,
+  }
+}
