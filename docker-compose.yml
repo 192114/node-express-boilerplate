@@ -10,6 +10,8 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
+    volumes:
+      - uploads_data:/app/${UPLOAD_DIR:-uploads}
 
   db:
     image: postgres:16-alpine
@@ -34,3 +36,4 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:

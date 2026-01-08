@@ -39,6 +39,13 @@ export const config = {
     password: env.SMTP_PASSWORD,
     from: env.SMTP_FROM,
   },
+  // upload 配置
+  upload: {
+    maxSize: env.UPLOAD_MAX_SIZE,
+    maxFiles: env.UPLOAD_MAX_FILES,
+    dir: env.UPLOAD_DIR,
+    allowedMimeTypes: env.UPLOAD_ALLOWED_MIME_TYPES,
+  },
   // CORS 配置
   cors: {
     origin: env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN.split(','),

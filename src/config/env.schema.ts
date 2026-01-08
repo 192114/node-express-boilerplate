@@ -95,6 +95,17 @@ export const envSchema = z.object({
   SMTP_PASSWORD: z.string().min(1, 'SMTP_PASSWORD is required'),
   SMTP_FROM: z.email({ message: 'SMTP_FROM must be a valid email address' }),
 
+  // upload 相关
+  UPLOAD_MAX_SIZE: z.string().regex(/^\d+$/).transform(Number).default(10),
+  UPLOAD_MAX_FILES: z.string().regex(/^\d+$/).transform(Number).default(10),
+  UPLOAD_DIR: z.string().default('uploads'),
+  UPLOAD_ALLOWED_MIME_TYPES: z
+    .string()
+    .default(
+      'image/jpeg,image/png,image/gif,image/webp,image/svg+xml,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain,text/csv,application/zip,application/x-zip-compressed,application/x-rar-compressed',
+    )
+    .transform((value) => value.split(',')),
+
   // CORS 配置
   CORS_ORIGIN: corsOriginSchema,
 })
