@@ -15,6 +15,8 @@ export const validate = (schema: ParsableSchema) => {
         body: req.body,
         params: req.params,
         query: req.query,
+        files: req.files,
+        file: req.file,
       })
       next()
     } catch (err: unknown) {

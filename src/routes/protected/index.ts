@@ -10,6 +10,6 @@ const router = Router()
 // 添加鉴权中间件
 router.use(authMiddleware)
 
-router.get('/upload', uploadRoutes)
+router.use('/upload', uploadRoutes)
 
 export default router

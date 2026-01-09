@@ -75,7 +75,7 @@ export const verifyAccessToken = async (accessToken: string): Promise<VerifyAcce
   new Promise((resovle, reject) => {
     jwt.verify(accessToken, secret, (err, decode) => {
       if (err) {
-        return reject({
+        return resovle({
           code: VerifyAccessTokenErrorCodeEnum[
             err.name as keyof typeof VerifyAccessTokenErrorCodeEnum
           ],
@@ -83,7 +83,7 @@ export const verifyAccessToken = async (accessToken: string): Promise<VerifyAcce
       }
 
       if (!decode || typeof decode === 'string') {
-        return reject({
+        return resovle({
           code: 4,
         })
       }
