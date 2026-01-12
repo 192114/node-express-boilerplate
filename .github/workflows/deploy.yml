@@ -3,8 +3,6 @@ name: Deploy to Server
 on:
   push:
     branches: [main, master]
-    tags:
-      - 'v*'
 
 jobs:
   deploy:
@@ -17,6 +15,11 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+
+      - name: Add deploy host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -T 15 -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
       - name: Sync project to server
         run: |
