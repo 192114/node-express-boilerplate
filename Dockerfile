@@ -36,8 +36,11 @@ FROM base AS build
 # 关键：设置构建时环境变量占位符
 # 这些变量在 build 阶段只是为了通过 Prisma 的校验，不会被打包进最终运行逻辑
 ENV POSTGRES_OWNER_USER=placeholder
-ENV DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
 ENV POSTGRES_OWNER_PASSWORD=placeholder
+ENV POSTGRES_HOST=db
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_DB=postgres
+
 
 # 从 deps 阶段拷贝依赖
 COPY --from=deps /app/node_modules ./node_modules
