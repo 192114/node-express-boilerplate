@@ -48,6 +48,8 @@ services:
   nginx:
     <<: *nginx-common
     profiles: ['prod']
+    depends_on: [app]
+    restart: unless-stopped
     environment:
       <<: *nginx-common-env
       NODE_ENV: production
