@@ -37,6 +37,7 @@ FROM base AS build
 # 这些变量在 build 阶段只是为了通过 Prisma 的校验，不会被打包进最终运行逻辑
 ENV POSTGRES_OWNER_USER=placeholder
 ENV DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
+ENV POSTGRES_OWNER_PASSWORD=placeholder
 
 # 从 deps 阶段拷贝依赖
 COPY --from=deps /app/node_modules ./node_modules
