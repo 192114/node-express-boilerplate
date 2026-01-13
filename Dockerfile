@@ -33,7 +33,7 @@ FROM base AS build
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
+RUN pnpm prisma generate
 RUN pnpm run build
 
 ############################
