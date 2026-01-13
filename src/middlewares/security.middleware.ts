@@ -39,12 +39,14 @@ export const corsConfig = {
       return callback(null, true)
     }
 
-    const allowedOrigins =
-      config.cors.origin === true
-        ? ['*'] // 开发环境可能允许所有
-        : Array.isArray(config.cors.origin)
-          ? config.cors.origin
-          : [config.cors.origin]
+    // 显式允许所有来源（仅在配置为 * 时生效）
+    if (config.cors.origin === true) {
+      return callback(null, true)
+    }
+
+    const allowedOrigins = Array.isArray(config.cors.origin)
+      ? config.cors.origin
+      : [config.cors.origin]
 
     // 如果允许所有来源（仅开发环境）
     if (config.app.isDevelopment) {

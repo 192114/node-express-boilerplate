@@ -90,7 +90,11 @@ export const envSchema = z.object({
   // Email 配置
   SMTP_HOST: z.string().min(1, 'SMTP_HOST is required'),
   SMTP_PORT: z.string().regex(/^\d+$/).transform(Number).default(587),
-  SMTP_SECURE: z.string().transform(Boolean).default(false),
+  // 使用字符串枚举避免 Boolean('false') 误判为 true
+  SMTP_SECURE: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
   SMTP_USER: z.string().min(1, 'SMTP_USER is required'),
   SMTP_PASSWORD: z.string().min(1, 'SMTP_PASSWORD is required'),
   SMTP_FROM: z.email({ message: 'SMTP_FROM must be a valid email address' }),
