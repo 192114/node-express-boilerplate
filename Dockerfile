@@ -69,6 +69,8 @@ ENV PATH=$PNPM_HOME:$PATH
 RUN npm config set registry https://registry.npmmirror.com \
     && npm install -g pnpm@10.11.1
 
+COPY package.json ./
+
 # A. 拷贝生产环境所需的 node_modules
 COPY --from=deps /app/node_modules ./node_modules
 
