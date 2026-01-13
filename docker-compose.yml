@@ -25,6 +25,7 @@ services:
     env_file: [.env]
     environment:
       - API_UPSTREAM_PORT=${API_UPSTREAM_PORT:-8090}
+      - DATABASE_URL=postgresql://${POSTGRES_OWNER_USER}:${POSTGRES_OWNER_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
     ports:
       - '${API_PORT}:${API_UPSTREAM_PORT}'
     depends_on:
